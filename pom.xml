@@ -30,7 +30,7 @@ under the License.
   </parent>
 
   <artifactId>maven-remote-resources-plugin</artifactId>
-  <version>1.6.1-SNAPSHOT</version>
+  <version>1.6.1-gene42-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>Apache Maven Remote Resources Plugin</name>
@@ -47,31 +47,47 @@ under the License.
   </prerequisites>
 
   <scm>
-    <connection>scm:git:https://gitbox.apache.org/repos/asf/maven-remote-resources-plugin.git</connection>
-    <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/maven-remote-resources-plugin.git</developerConnection>
-    <url>https://github.com/apache/maven-remote-resources-plugin/tree/${project.scm.tag}</url>
+    <connection>scm:git:https://github.com/Gene42/maven-remote-resources-plugin</connection>
+    <developerConnection>scm:git:git@github.com:Gene42/maven-remote-resources-plugin</developerConnection>
+    <url>https://github.com/Gene42/maven-remote-resources-plugin</url>
     <tag>HEAD</tag>
   </scm>
-  <issueManagement>
-    <system>JIRA</system>
-    <url>https://issues.apache.org/jira/browse/MRRESOURCES</url>
-  </issueManagement>
-  <ciManagement>
-    <system>Jenkins</system>
-    <url>https://builds.apache.org/job/maven-box/job/maven-remote-resources-plugin/</url>
-  </ciManagement>
+
   <distributionManagement>
-    <site>
-      <id>apache.website</id>
-      <url>scm:svn:https://svn.apache.org/repos/asf/maven/website/components/${maven.site.path}</url>
-    </site>
+    <repository>
+      <id>gene42-nexus</id>
+      <name>Maven2 Remote Repository for Releases</name>
+      <url>https://nexus.gene42.com/repository/gene42-public-releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>gene42-nexus</id>
+      <name>Maven2 Development Repository for Snapshots</name>
+      <url>https://nexus.gene42.com/repository/gene42-public-snapshots/</url>
+    </snapshotRepository>
   </distributionManagement>
+
+  <repositories>
+    <repository>
+      <id>gene42-nexus-public</id>
+      <name>Gene42 PhenoTips Public repository</name>
+      <url>https://nexus.gene42.com/repository/gene42-public-group/</url>
+      <releases>
+        <enabled>true</enabled>
+        <checksumPolicy>fail</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <checksumPolicy>fail</checksumPolicy>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <properties>
     <mavenVersion>2.2.1</mavenVersion>
     <javaVersion>7</javaVersion>
     <mavenFilteringVersion>3.1.1</mavenFilteringVersion>
     <sitePluginVersion>3.3</sitePluginVersion>
+    <maven.test.skip>true</maven.test.skip>
   </properties>
 
   <dependencies>
@@ -355,7 +371,7 @@ under the License.
                   <systemPropertyVariables>
                     <!--
                       The tests have to pick the right repository.
-                      SUREFIRE-1385: Cannot set maven.repo.local directly because it might have been set by the user 
+                      SUREFIRE-1385: Cannot set maven.repo.local directly because it might have been set by the user
                       on the CLI directly (and it would be preferred)
                     -->
                     <localRepositoryPath>${project.build.directory}/it-repo</localRepositoryPath>

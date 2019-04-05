@@ -148,7 +148,7 @@ public class ProcessRemoteResourcesMojo
      * <p>
      * So, the default filtering delimiters might be specified as:
      * </p>
-     * 
+     *
      * <pre>
      * &lt;delimiters&gt;
      *   &lt;delimiter&gt;${*}&lt/delimiter&gt;
@@ -269,6 +269,14 @@ public class ProcessRemoteResourcesMojo
     private boolean skip;
 
     /**
+     * Process only the given types
+     *
+     * @since 1.0-alpha-5
+     */
+    @Parameter( property = "includeTypes" )
+    private Set<String> includeTypes;
+
+    /**
      * Attaches the resources to the main build of the project as a resource directory.
      *
      * @since 1.5
@@ -381,7 +389,7 @@ public class ProcessRemoteResourcesMojo
      * The default is the same as "includeScope" if there are no exclude scopes set.
      * Otherwise, it defaults to "test" to grab all the dependencies so the
      * exclude filters can filter out what is not needed.
-     * 
+     *
      * @since 1.5
      */
     @Parameter
@@ -442,6 +450,14 @@ public class ProcessRemoteResourcesMojo
         if ( skip )
         {
             getLog().info( "Skipping remote resources execution." );
+            return;
+        }
+
+        String currentProjectType = this.project.getArtifact().getType();
+        if ( includeTypes != null && !includeTypes.contains( currentProjectType ) )
+        {
+            getLog().info( String
+                .format( "Skipping remote resources execution for type [%s].", currentProjectType ) );
             return;
         }
 
@@ -807,7 +823,7 @@ public class ProcessRemoteResourcesMojo
             {
                 if ( source == templateSource )
                 {
-                    try ( DeferredFileOutputStream os = 
+                    try ( DeferredFileOutputStream os =
                                     new DeferredFileOutputStream( velocityFilterInMemoryThreshold, file ) )
                     {
                         try ( Reader reader = getReader( source ); Writer writer = getWriter( os ) )
@@ -861,7 +877,7 @@ public class ProcessRemoteResourcesMojo
             return ReaderFactory.newPlatformReader( source );
         }
     }
-    
+
     private Writer getWriter( OutputStream os ) throws IOException
     {
         if ( encoding != null )
@@ -917,7 +933,7 @@ public class ProcessRemoteResourcesMojo
             return;
         }
         getLog().debug( "Writing " + file );
-        
+
         try ( OutputStream os = new FileOutputStream( file ) )
         {
             outStream.writeTo( os );
@@ -1167,7 +1183,7 @@ public class ProcessRemoteResourcesMojo
                 getLog().debug( "processResourceBundle on bundle#" + bundleCount + " " + url );
 
                 RemoteResourcesBundle bundle;
-                
+
                 try ( InputStream in = url.openStream() )
                 {
                     bundle = bundleReader.read( in );
@@ -1266,14 +1282,14 @@ public class ProcessRemoteResourcesMojo
                         {
                             IOUtil.copy( in, out );
                         }
-                        
+
                     }
                     else if ( appendedVmResourceFile.exists() )
                     {
                         getLog().info( "Filtering appended resource: " + projectResource + ".vm" );
-                        
 
-                        try ( Reader reader = new FileReader( appendedVmResourceFile ); 
+
+                        try ( Reader reader = new FileReader( appendedVmResourceFile );
                               Writer writer = getWriter( bundle, f ) )
                         {
                             Velocity.init();
