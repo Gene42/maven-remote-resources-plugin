@@ -333,6 +333,14 @@ public abstract class AbstractProcessRemoteResourcesMojo extends AbstractMojo {
     protected String includeGroupIds;
 
     /**
+     * Process only the given types
+     *
+     * @since 3.3.0
+     */
+    @Parameter( property = "includeTypes" )
+    protected Set<String> includeTypes;
+
+    /**
      * If we should exclude transitive dependencies
      *
      * @since 1.0
@@ -399,6 +407,15 @@ public abstract class AbstractProcessRemoteResourcesMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException {
         if (skip) {
             getLog().info("Skipping remote resources execution.");
+            return;
+        }
+
+
+        String currentProjectType = this.project.getArtifact().getType();
+
+
+        if (includeTypes != null && !includeTypes.contains(currentProjectType)) {
+            getLog().info(String.format("Skipping remote resources execution for type [%s].", currentProjectType));
             return;
         }
 
